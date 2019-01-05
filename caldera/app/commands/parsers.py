@@ -38,6 +38,38 @@ class powerview(object):
         except:
             raise ParseError("Unexpected Data in return: {}".format(text))
 
+    @staticmethod
+    def getnetgroupmember(text: str) -> List[Dict]:
+        """
+        こいつを加えてみた。
+        """
+        try:
+            users = []
+            skip = text.find("GroupDomain")
+            safe = text[skip:]
+            for block in safe.split("\r\n\r\n"):
+                lines = block.splitlines()
+                parsed_block = {}
+                for line in lines:
+                    if ':' in line:
+                        k, v = line.split(':')
+                        parsed_block[k.strip()] = v.strip().lower()
+                    else:
+                        continue
+                # block_dict = {x.strip(): y.strip() for x, y in line.split(':') for line in lines}
+                if len(parsed_block):
+                    if parsed_block.get('MemberObjectClass', '') != 'user':
+                        next
+                    domain = parsed_block.get('GroupDomain', '')
+                    user = parsed_block.get('MemberName', '')
+                    users.append(dict(username=user,
+                                      is_group=False,
+                                      sid=parsed_block.get('MemberSID', ''),
+                                      dns_domain=domain))
+            return users
+        except:
+            raise ParseError("Unexpected Data in return: {}".format(text))
+
     GetDomainComputerResult = NamedTuple("GetDomainComputerResult", [("dns_hostname", str), ("os_version", Dict)])
     @staticmethod
     def getdomaincomputer(text: str) -> Dict[str, Dict[str, str]]:

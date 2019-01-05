@@ -16,6 +16,8 @@ import os
 from .engine.objects import Operation, Network, Domain, Log, ObservedHost, TechniqueMapping, Job, Rat, Host, \
     ObservedRat, Adversary, CodedStep, ActiveConnection, Agent, AttackTechnique, AttackTactic, SiteUser, Setting, \
     Opcodes, Artifactlist, ObservedFile, AttackList, JobException, ObservedSchtask, ObservedProcess, AttackGroup
+from .engine.objects import ObservedDomain, ObservedOSVersion, ObservedUser, ObservedShare, ObservedCredential, \
+    ObservedService, ObservedTimeDelta, ObservedRegKey, ObservedPersistence
 from . import authentication as auth
 from .engine.database import native_types
 from . import ddp
@@ -427,9 +429,8 @@ async def query_operations(request):
 async def get_opcodes(request):
     return Opcodes.arguments
 
-
 @api('/api/networks/{network}/operations', methods=['GET', 'POST'], objects={'network': Network}, auth_group=['human'])
-async def query_operations(request, network):
+async def query_perations(request, network):
     if request.method == 'GET':
         return list(Operation.objects(network=network))
     elif request.method == 'POST':
@@ -445,7 +446,6 @@ async def query_operations(request, network):
         json['steps'] = [x.name for x in adversary.steps]
         operation = Operation(**json).save()
         return operation.id
-
 
 @api('/api/networks/{network}/operations/{operation}', methods=['GET', 'PUT', 'DELETE', 'PATCH'], get={'wait': False},
      objects={'network': Network, 'operation': Operation}, auth_group=['human'])
@@ -804,6 +804,135 @@ def format_yaml(yaml_content):
 async def query_bsf(request, log):
     return log["event_stream"]
 
+@api('/api/observed/credentials', methods=['GET'], auth_group=['human'])
+async def query_credentials(request):
+    return ObservedCredential.objects
+
+@api('/api/observed/credentials/{credential}', methods=['GET'], 
+     objects={'credential': ObservedCredential}, auth_group=['human'])
+async def query_credential(request, token, credential):
+    return credential
+
+@api('/api/observed/users', methods=['GET'], auth_group=['human'])
+async def query_users(request):
+    return ObservedUser.objects
+
+@api('/api/observed/users/{user}', methods=['GET'], 
+     objects={'user': ObservedUser}, auth_group=['human'])
+async def query_user(request, token, user):
+    return user
+
+@api('/api/observed/shares', methods=['GET'], auth_group=['human'])
+async def query_shares(request):
+    return ObservedShare.objects
+
+@api('/api/observed/shares/{share}', methods=['GET'], 
+     objects={'share': ObservedShare}, auth_group=['human'])
+async def query_share(request, token, share):
+    return share
+
+@api('/api/observed/files', methods=['GET'], auth_group=['human'])
+async def query_files(request):
+    return ObservedFile.objects
+
+@api('/api/observed/files/{file}', methods=['GET'], 
+     objects={'file': ObservedFile}, auth_group=['human'])
+async def query_file(request, token, file):
+    return file
+
+@api('/api/observed/domains', methods=['GET'], auth_group=['human'])
+async def query_domains(request):
+    return ObservedDomain.objects
+
+@api('/api/observed/domains/{domain}', methods=['GET'], 
+     objects={'domain': ObservedDomain}, auth_group=['human'])
+async def query_domain(request, token, domain):
+    return domain
+
+@api('/api/observed/os_versions', methods=['GET'], auth_group=['human'])
+async def query_os_versions(request):
+    return ObservedOsversion.objects
+
+@api('/api/observed/os_versions/{os_version}', methods=['GET'], 
+     objects={'os_version': ObservedOSVersion}, auth_group=['human'])
+async def query_os_version(request, token, os_version):
+    return os_version
+
+@api('/api/observed/hosts', methods=['GET'], auth_group=['human'])
+async def query_hosts(request):
+    return ObservedHost.objects
+
+@api('/api/observed/hosts/{host}', methods=['GET'], 
+     objects={'host': ObservedHost}, auth_group=['human'])
+async def query_host(request, token, host):
+    return host
+
+@api('/api/observed/schtasks', methods=['GET'], auth_group=['human'])
+async def query_schtasks(request):
+    return ObservedSchtask.objects
+
+@api('/api/observed/schtasks/{schtask}', methods=['GET'], 
+     objects={'schtask': ObservedSchtask}, auth_group=['human'])
+async def query_schtask(request, token, schtask):
+    return schtask
+
+@api('/api/observed/services', methods=['GET'], auth_group=['human'])
+async def query_timedeltas(request):
+    return ObservedService.objects
+
+@api('/api/observed/services/{service}', methods=['GET'], 
+     objects={'service': ObservedService}, auth_group=['human'])
+async def query_timedelta(request, token, service):
+    return service
+
+@api('/api/observed/timedeltas', methods=['GET'], auth_group=['human'])
+async def query_timedeltas(request):
+    return ObservedTimeDelta.objects
+
+@api('/api/observed/timedeltas/{timedelta}', methods=['GET'], 
+     objects={'timedelta': ObservedTimeDelta}, auth_group=['human'])
+async def query_timedelta(request, token, timedelta):
+    return timedelta
+
+@api('/api/observed/rats', methods=['GET'], auth_group=['human'])
+async def query_rats(request):
+    return ObservedRat.objects
+
+@api('/api/observed/rats/{rat}', methods=['GET'], 
+     objects={'rat': ObservedRat}, auth_group=['human'])
+async def query_rat(request, token, rat):
+    return rat
+
+@api('/api/observed/registry_keys', methods=['GET'], auth_group=['human'])
+async def query_registry_keys(request):
+    return ObservedRegKey.objects
+
+@api('/api/observed/registry_keys/{registry_key}', methods=['GET'], 
+     objects={'registry_key': ObservedRegKey}, auth_group=['human'])
+async def query_regkey(request, token, registry_key):
+    return registry_key
+
+@api('/api/observed/persistence', methods=['GET'], auth_group=['human'])
+async def query_persistence_all(request):
+    return ObservedPersistence.objects
+
+@api('/api/observed/persistence/{persistence}', methods=['GET'], 
+     objects={'persistence': ObservedPersistence}, auth_group=['human'])
+async def query_persistence(request, token, persistence):
+    return persistence
+
+@api('/api/observed/processes', methods=['GET'], auth_group=['human'])
+async def query_processes(request):
+    return ObservedProcess.objects
+
+@api('/api/observed/processes/{process}', methods=['GET'], 
+     objects={'process': ObservedProcess}, auth_group=['human'])
+async def query_process(request, token, process):
+    return process
+
+@api('/api/step', methods=['GET'], auth_group=['human'])
+async def query_step(request):
+    return CodedStep.objects
 
 @websocket('/websocket', auth_group=["human"])
 async def wb_operation(request):

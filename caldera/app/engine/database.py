@@ -3,6 +3,7 @@ from cryptography.fernet import Fernet
 from mongoengine import connect, Document
 from mongoengine.base import TopLevelDocumentMetaclass, BaseDocument
 from mongoengine.queryset.base import BaseQuerySet
+from bson.dbref import DBRef
 from bson.objectid import ObjectId
 import ujson as json
 import pymongo
@@ -200,6 +201,8 @@ def native_types(obj):
         obj = list(obj)
     elif isinstance(obj, ObjectId):
         obj = str(obj)
+    elif isinstance(obj, DBRef):
+        obj = {obj.collection : obj.id}
     elif hasattr(obj, 'isoformat'):
         obj = obj.isoformat()
     if isinstance(obj, dict):
